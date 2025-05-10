@@ -13,7 +13,12 @@ class Match{
         this.tolerancia = 60*1000;
     }
     add_player(jugador){
+        //ignorar si ya existe
+        if(this.get_player(jugador.get_id()).result){
+            return {state: false, jugadores: this.player_list.length};
+        }
         //añadir al jugador
+        jugador.set_map(this.generateRandomMap())
         this.player_list.push(jugador);
         this.calculate_mmr_medio();
         return {state: true, jugadores: this.player_list.length}
@@ -31,12 +36,11 @@ class Match{
         this.mmr_media = sum/this.player_list.length;
     }
     get_player(id){
-        this.player_list.forEach(jugador => {
-            if(jugador.get_id() == id){
-                return {result: true, data: jugador};
-            }
-        });
-        return {result: false, data: null};
+        let jugador = this.player_list.find(jugador => jugador.get_id() === id);
+        if (jugador) {
+            return { result: true, data: jugador };
+        }
+        return { result: false, data: null };
     }
     get_tipo_cola(){
         return this.tipo_cola;
@@ -75,7 +79,7 @@ class Match{
             return { row, column };
         });
 
-        return { mines: mineArray };
+        return { mines: mineArray, moves:[]};
     }
 }
 
