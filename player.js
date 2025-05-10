@@ -30,7 +30,6 @@ class Jugador{
         this.map = map;
     }
     make_move(row, column, state){
-        console.log(row, " : ",column, " : ",state)
         if(row===undefined || column===undefined || state===undefined){
             return false;
         }
