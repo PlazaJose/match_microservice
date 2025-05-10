@@ -43,7 +43,7 @@ app.post("/match/move", (req, res)=>{
         const player_result = match.get_player(id_player);
         if(player_result.result){
             const player = player_result.data;
-            const move_state = player.make_move(move.roq, move.column, move.state);
+            const move_state = player.make_move(move.row, move.column, move.state);
             return res.json({state: move_state, map: player.get_map()});
         }
     }
