@@ -16,9 +16,18 @@ app.get("/match/find/:id_player", (req, res)=>{
     const id_player = req.params.id_player;
     const match = match_manager.get_match_by_player(id_player);
     if(!match.result){
-        return res.json({state: false, message: "jugadr o cola no encontrada: ", match});
+        return res.json({state: false, message: "jugadr o match no encontrada: ", match});
     }
     return res.json({state: true, match: match.data.get_id()});
+});
+
+app.get("/match/match/:id_match", (req, res)=>{
+    const id_match = req.params.id_match;
+    const match = match_manager.get_match(id_match);
+    if(!match.result){
+        return res.json({state: false, message: "match no encontrada: ", match:null});
+    }
+    return res.json({state: true, match: match.data.serialize()});
 });
 
 app.get("/match/map/:id_match/:id_player", (req, res)=>{
@@ -32,7 +41,22 @@ app.get("/match/map/:id_match/:id_player", (req, res)=>{
             return res.json({state: true, map: player.get_map()});
         }
     }
-    return res.json({state: false, message: "jugadr o cola no encontrada"});
+    return res.json({state: false, message: "jugadr o match no encontrada"});
+});
+
+app.post("/match/generate", (req, res)=>{
+    const {id_match, id_player, si, sj} = req.body;
+    const match_result = match_manager.get_match(id_match);
+    if(match_result.result){
+        const match = match_result.data;
+        const player_result = match.get_player(id_player);
+        if(player_result.result){
+            const player = player_result.data;
+            player.set_map(match.generate_random_map(si, sj));
+            return res.json({state: true, map: player.get_map()});
+        }
+    }
+    return res.json({state: false, message: "jugadr o match no encontrada"});
 });
 
 app.post("/match/move", (req, res)=>{
@@ -47,7 +71,7 @@ app.post("/match/move", (req, res)=>{
             return res.json({state: move_state, map: player.get_map()});
         }
     }
-    return res.json({state: false, message: "jugadr o cola no encontrada"});
+    return res.json({state: false, message: "jugadr o match no encontrada"});
 });
 
 app.listen(PORT, () => {

@@ -55,14 +55,23 @@ class Match{
         return this.player_list.length;
     }
 
-    generate_random_map(){
-        let mines = [];
-        for(let i = 0; i< 10; i++){
+    generate_random_map(si, sj){
+        let mines = new Set(); // Use a Set to ensure uniqueness
+        mines.add(`${si},${sj}`);
+        while (mines.size < 11) {
             let row = Math.floor(Math.random() * 10);
             let column = Math.floor(Math.random() * 10);
-            mines.push({row, column});
+            mines.add(`${row},${column}`); // Store positions as unique strings
         }
-        return{mines};
+        mines.delete(`${si},${sj}`);
+
+        // Convert Set back to an array of objects
+        let mineArray = Array.from(mines).map(position => {
+            let [row, column] = position.split(",").map(Number);
+            return { row, column };
+        });
+
+        return { mines: mineArray, moves:[]};
     }
     generateRandomMap() {
         let mines = new Set(); // Use a Set to ensure uniqueness
@@ -81,6 +90,21 @@ class Match{
 
         return { mines: mineArray, moves:[]};
     }
+    serialize(){
+        return {
+            id_match : this.id,
+            tipo_cola : this.tipo_cola,
+            jugadores : this.get_serialized_player_list()
+        };
+    }
+    get_serialized_player_list(){
+        const sp = [];
+        this.player_list.forEach(jugador => {
+            sp.push(jugador.serialize());
+        });
+        return sp;
+    }
+
 }
 
 module.exports = Match;
