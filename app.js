@@ -21,6 +21,15 @@ app.get("/match/find/:id_player", (req, res)=>{
     return res.json({state: true, match: match.data.get_id()});
 });
 
+app.get("/match/started/:id_player", (req, res)=>{
+    const id_player = req.params.id_player;
+    const match = match_manager.get_match_by_player(id_player);
+    if(!match.result){
+        return res.json({state: false, message: "jugadr o match no encontrada: ", data : false});
+    }
+    return res.json({state: true, data: match.data.get_player(id_player).data.started});
+});
+
 app.get("/match/match/:id_match", (req, res)=>{
     const id_match = req.params.id_match;
     const match = match_manager.get_match(id_match);
@@ -53,6 +62,7 @@ app.post("/match/generate", (req, res)=>{
         if(player_result.result){
             const player = player_result.data;
             player.set_map(match.generate_random_map(si, sj));
+            player.started = true;
             return res.json({state: true, map: player.get_map()});
         }
     }
@@ -67,11 +77,27 @@ app.post("/match/move", (req, res)=>{
         const player_result = match.get_player(id_player);
         if(player_result.result){
             const player = player_result.data;
+            if(player.check_state()){
+                return res.json({state: false, map: player.get_map()});
+            }
             const move_state = player.make_move(move.row, move.column, move.state);
+            if (move_state.gamestate == 2){
+                match_manager.finish_match_player_win(player.get_id());
+            }
+            if(move_state.gamestate == 1){
+                //match_manager.remove_player(player.get_id(), match.get_id());
+            }
             return res.json({state: move_state, map: player.get_map()});
         }
     }
     return res.json({state: false, message: "jugadr o match no encontrada"});
+});
+
+app.post('/match/abandonar', (req, res)=>{
+    const {id_player, id_match} = req.body;
+    const resultado = match_manager.remove_player(id_player, id_match);
+    console.log(`Jugador ${id_player} ha abandonado la partida ${id_match}`);
+    return res.json({message:`Jugador ${id_player} ha abandonado la cola ${id_match}`});
 });
 
 app.listen(PORT, () => {

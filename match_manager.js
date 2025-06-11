@@ -25,6 +25,10 @@ class Match_manager{
         this.id_counter+=1;
         return match.get_id();
     }
+    remove_match(id){
+        this.match_list = this.match_list.filter(match => match.get_id()!=id);
+        return true;
+    }
     get_match(id){
         let match_encontrada = this.match_list.find(match => match.get_id()==id);
         if(match_encontrada){
@@ -39,8 +43,74 @@ class Match_manager{
         }
         return { result: false, data: null };
     }
+    remove_player(id_player, id_match){
+        const data = this.get_match(id_match);
+        if(!data.result){
+            console.log(data);
+            return false;
+        }
+        data.data.remove_player(id_player);
+        if(data.data.get_size()<1){
+            this.remove_match(data.data.get_id());
+        }
+        if(data.data.get_size()==1){
+            this.end_match(data.data);
+        }
+        return true;
+    }
+    finish_match_player_win(id_player){
+        const match_result = this.get_match_by_player(id_player);
+        if(!match_result.result){
+            console.log("jugador no encontrado");
+        }
+        const match = match_result.data;
+        const losers = match.get_list_but_player(id_player);
+        losers.forEach(player => {
+            this.remove_player(player.get_id(), match.get_id());
+        });
+    }
+    end_match(match){
+        //hacer ganar, llamando al microservicio de rank
+        this.player_win(match.get_winner_id(), match.get_tipo_cola());
+        //terminar
+        this.remove_match(match.get_id());
+    }
+    player_win(id_player, tipo_cola = Match.COLA_NORMAL){
+        switch(tipo_cola){
+            case Match.COLA_NORMAL:
+                break;
+            case Match.COLA_RANK:
+                sendRankingUpdate(id_player, 3);
+                break;
+            default:
+                break;
+        }
+    }
     lenght(){
         return this.match_list.length;
+    }
+    
+}
+
+//const fetch = require('node-fetch');
+
+async function sendRankingUpdate(id, points) {
+    try {
+        const response = await fetch('http://bmbr.ddns.net:5106/ranking/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, points })
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+            console.log("Ranking updated successfully:", data);
+        } else {
+            console.error("Error updating ranking:", data);
+        }
+    } catch (error) {
+        console.error("Failed to connect to ranking service:", error);
     }
 }
 

@@ -4,6 +4,7 @@ class Jugador{
         this.name = name;
         this.mmr = mmr;
         this.map = {};
+        this.started = false;
     }
     get_id() {
         return this.id;
@@ -99,7 +100,7 @@ class Jugador{
                     break;
             }
         });
-        let win = opened+10==10*10;
+        let win = opened+10>=10*10;
         return (exploded?1:(win?2:0)); // retorna 1 si explotó, 2 si ganó y 0 si no ha pasado nada
     }
     player_to_string(){

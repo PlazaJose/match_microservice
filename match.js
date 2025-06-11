@@ -28,6 +28,9 @@ class Match{
         this.calculate_mmr_medio();
         return true;
     }
+    get_list_but_player(id_player){
+        return this.player_list.filter(p => p.get_id() != id_player);
+    }
     calculate_mmr_medio(){
         let sum = 0;
         this.player_list.forEach(jugador => {
@@ -41,6 +44,12 @@ class Match{
             return { result: true, data: jugador };
         }
         return { result: false, data: null };
+    }
+    get_winner_id(){
+        if(this.get_size()>1){
+            return -1;
+        }
+        return this.player_list[0].get_id()
     }
     get_tipo_cola(){
         return this.tipo_cola;
