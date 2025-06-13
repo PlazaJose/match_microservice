@@ -130,7 +130,7 @@ app.post('/match/create_match', (req, res) =>{
     const {data} = req.body;
     console.log("Received match request:", req.body);
     match_manager.add_match(data);
-    console.log(event.data.jugadores[0].id, "_", match_manager.lenght());
+    console.log(data.jugadores[0].id, "_", match_manager.lenght());
     return res.json({message: `match started: ${match_manager.serialize()}`});
 });
 
