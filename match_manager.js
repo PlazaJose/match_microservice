@@ -89,6 +89,13 @@ class Match_manager{
     lenght(){
         return this.match_list.length;
     }
+    serialize(){
+        let cm ={};
+        this.match_list.forEach(match => {
+            cm["match"+match.get_id()] = match.serialize();
+        });
+        return cm;
+    }
     
 }
 

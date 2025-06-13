@@ -119,6 +119,13 @@ app.post('/match/abandonar', (req, res)=>{
     return res.json({message:`Jugador ${id_player} ha abandonado la cola ${id_match}`});
 });
 
+app.post('/match/create_match', (req, res) =>{
+    const {data} = req.body;
+    match_manager.add_match(data);
+    console.log(event.data.jugadores[0].id, "_", match_manager.lenght());
+    return res.json({message: `match started: ${match_manager.serialize()}`});
+});
+
 app.listen(PORT, () => {
     console.log(`Servidor Express corriendo en el puerto ${PORT}`);
 
