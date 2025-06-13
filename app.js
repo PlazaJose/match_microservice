@@ -9,6 +9,25 @@ const PORT = 5104;
 // Middleware to parse JSON
 app.use(express.json());
 
+app.get("/", (req, res) => {
+    res.send(`
+        <html>
+        <head>
+            <title>BMBR</title>
+            <style>
+                body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+                h1 { color: #007bff; }
+            </style>
+        </head>
+        <body>
+            <h1>Welcome to the BMBR match manager  🚀</h1>
+            <p>Use the API endpoints to retrieve data.</p>
+            <p>try: <code>/match/find/:id</code>
+        </body>
+        </html>
+    `);
+});
+
 //manejo de partidas
 const match_manager = new Match_manager();
 

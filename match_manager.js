@@ -96,7 +96,7 @@ class Match_manager{
 
 async function sendRankingUpdate(id, points) {
     try {
-        const response = await fetch('http://bmbr.ddns.net:5106/ranking/add', {
+        const response = await fetch('https://api-gateway-nine-orcin.vercel.app/rkn/ranking/add', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id, points })
