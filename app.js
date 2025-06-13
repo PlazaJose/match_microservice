@@ -9,6 +9,13 @@ const PORT = 5104;
 // Middleware to parse JSON
 app.use(express.json());
 
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    next();
+});
+
 app.get("/", (req, res) => {
     res.send(`
         <html>
